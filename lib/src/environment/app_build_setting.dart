@@ -8,6 +8,7 @@ class AppBuildSetting {
     WidgetsFlutterBinding.ensureInitialized();
 
     await Hive.initFlutter();
+    await Hive.openBox('messages');
 
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
