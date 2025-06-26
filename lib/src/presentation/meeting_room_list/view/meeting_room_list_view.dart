@@ -10,7 +10,22 @@ class _MeetingRoomListView extends BaseView {
       itemBuilder: (context, index) {
         final MeetingRoomEntity meetingRoom =
             meetingRoomListEntity.meetingRooms[index];
-        final LastMessageEntity lastMessage = meetingRoom.lastMessage;
+
+        LastMessageEntity lastMessage = meetingRoom.lastMessage;
+
+        final AsyncValue<List<MessageEntity>> messages =
+            ref.watch(messageListProvider(meetingRoom.roomId));
+        messages.whenData((list) {
+          if (list.isNotEmpty) {
+            final MessageEntity msg = list.first;
+            lastMessage = LastMessageEntity(
+              sender: msg.sender,
+              content: msg.content,
+              timestamp: msg.timestamp,
+            );
+          }
+        });
+
         final String formattedTime =
             lastMessage.timestamp.updateLastMessageDateFormat;
 

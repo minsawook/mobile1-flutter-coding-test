@@ -1,6 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile1_flutter_coding_test/src/domain/entity/message_list_response_entity.dart';
 import 'package:mobile1_flutter_coding_test/src/domain/usecase/meeting_room_usecase.dart';
+import 'package:mobile1_flutter_coding_test/src/presentation/message/provider/global_message_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'message_list_provider.g.dart';
@@ -19,13 +20,15 @@ class MessageList extends _$MessageList {
     final MessageUseCase useCase = messageUseCase ?? ref.read(messageUseCaseProvider);
 
     // 1. 로컬 저장소에서 메시지 목록을 가져오기
-    final List<MessageEntity> localMessages = await useCase.getLocalMessages(roomId: roomId);
+    final List<MessageEntity> localMessages =
+        await useCase.getLocalMessages(roomId: roomId);
 
-    // 2. 원격 API에서 전체 메시지 목록을 가져오기
-    final MessageListResponseEntity remoteResponse = await useCase.getMessageList();
-    // 현재 채팅방(roomId)에 해당하는 메시지만 필터링합니다.
-    final List<MessageEntity> remoteMessages =
-        remoteResponse.messages.where((message) => message.roomId == roomId).toList();
+    // 2. 원격 메시지 목록을 전역 Provider에서 가져오기
+    final List<MessageEntity> allRemoteMessages =
+        await ref.watch(globalMessageListProvider.future);
+    final List<MessageEntity> remoteMessages = allRemoteMessages
+        .where((message) => message.roomId == roomId)
+        .toList();
 
     // 3. 로컬과 원격 메시지를 병합
     final Map<String, MessageEntity> mergedMessagesMap = {
@@ -67,6 +70,9 @@ class MessageList extends _$MessageList {
       ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
     state = AsyncData(updatedMessages);
+
+    // 전역 메시지 목록에도 추가
+    ref.read(globalMessageListProvider.notifier).addMessage(newMessage);
 
     final MessageUseCase useCase = messageUseCase ?? ref.read(messageUseCaseProvider);
     await useCase.saveMessages(

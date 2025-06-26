@@ -7,6 +7,7 @@ import 'package:mobile1_flutter_coding_test/src/core/common/exception/custom_exc
 import 'package:mobile1_flutter_coding_test/src/core/common/extension/data_time_extension.dart';
 import 'package:mobile1_flutter_coding_test/src/core/constant/string_constant/meeting_room_string_constant.dart';
 import 'package:mobile1_flutter_coding_test/src/domain/entity/meeting_room_list_response_entity.dart';
+import 'package:mobile1_flutter_coding_test/src/domain/entity/message_list_response_entity.dart';
 import 'package:mobile1_flutter_coding_test/src/presentation/common/base/base_screen.dart';
 import 'package:mobile1_flutter_coding_test/src/presentation/common/base/base_view.dart';
 import 'package:mobile1_flutter_coding_test/src/presentation/common/component/custom_app_bar_widget.dart';
@@ -16,6 +17,7 @@ import 'package:mobile1_flutter_coding_test/src/presentation/common/error_screen
 import 'package:mobile1_flutter_coding_test/src/presentation/meeting_room_list/mixin/meeting_room_event.dart';
 import 'package:mobile1_flutter_coding_test/src/presentation/meeting_room_list/mixin/meeting_room_state.dart';
 import 'package:mobile1_flutter_coding_test/src/presentation/message/message_screen.dart';
+import 'package:mobile1_flutter_coding_test/src/presentation/message/provider/message_list_provider.dart';
 
 part 'view/meeting_room_list_view.dart';
 
