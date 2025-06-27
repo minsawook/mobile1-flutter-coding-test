@@ -10,11 +10,12 @@ on:
     types: [published]
 
 ### pr과 release 구분
-#  기본 pr시는 빠르고 가볍게 품질 검증
+#  기본 pr시는 빌드만
 jobs:
   quality:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+    runs-on: macos-latest
+    timeout-minutes: 30
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,10 +33,15 @@ jobs:
         run: flutter analyze
 
       - name: Run tests
-        run: |
-          flutter test --coverage
+        run: flutter test --coverage
 
-  # 릴리즈 시에는 Android/iOS 빌드
+      - name: Build Android APK
+        run: flutter build apk --debug
+
+      - name: Build iOS app
+        run: flutter build ios  --simulator
+
+  # 릴리즈 시에는 apk업로드
   release:
     if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     runs-on: ${{ matrix.os }}
@@ -70,9 +76,7 @@ jobs:
         env:
           FLUTTER_XCODE_CODE_SIGN_STYLE: Manual
         run: |
-          flutter build ipa \
-            --export-options-plist=ios/ExportOptions.plist \
-            --no-codesign
+          flutter build ios --simulator
 
 
       - name: Upload build artifacts
@@ -81,7 +85,6 @@ jobs:
           name: build-${{ matrix.os }}
           path: |
             build/app/outputs/**/*.apk
-            build/ios/ipa/*.ipa
 
 
 #워크플로 동시 실행 방지                                     #
